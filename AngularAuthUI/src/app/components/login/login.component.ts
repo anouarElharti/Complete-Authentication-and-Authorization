@@ -5,7 +5,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateForm';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,7 +21,11 @@ export class LoginComponent {
 
   loginForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -37,7 +43,17 @@ export class LoginComponent {
   onSubmit() {
     if (this.loginForm.valid) {
       // send the object to the api
-      console.log(this.loginForm.value);
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (res) => {
+          console.log('Response:', res.message);
+          this.loginForm.reset();
+          this.router.navigate(['dashboard']);
+        },
+        error: (err) => {
+          console.log('Error:', err?.error.message);
+        },
+      });
+      //console.log(this.loginForm.value);
     } else {
       // throw error using toaster
       ValidateForm.validateAllFormFields(this.loginForm);

@@ -5,7 +5,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateForm';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -19,7 +21,11 @@ export class SignupComponent {
 
   signUpForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
@@ -40,7 +46,17 @@ export class SignupComponent {
   onSignUp() {
     if (this.signUpForm.valid) {
       // Add logic for signUp
-      console.log(this.signUpForm.value);
+      this.authService.signUp(this.signUpForm.value).subscribe({
+        next: (res) => {
+          console.log('Register:', res.message);
+          this.signUpForm.reset();
+          this.router.navigate(['login']);
+        },
+        error: (err) => {
+          console.log('Error Registration:', err?.error.message);
+        },
+      });
+      //console.log(this.signUpForm.value);
     } else {
       //Logic for throwing errors
       ValidateForm.validateAllFormFields(this.signUpForm);
