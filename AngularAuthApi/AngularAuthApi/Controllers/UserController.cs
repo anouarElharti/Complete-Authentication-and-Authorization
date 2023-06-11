@@ -4,6 +4,8 @@ using AngularAuthApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AngularAuthApi.Controllers
 {
@@ -45,7 +47,11 @@ namespace AngularAuthApi.Controllers
             // CHECK EMAIL UNIQUE
             if (await CheckEmailExistAsync(userObj.Email))
                 return BadRequest(new { Message = "Email Alreaddy Exist!" });
+
             // CHECK PASSWORD STRENGTH
+            var pass = CheckPasswordStrength(userObj.Password);
+            if (!string.IsNullOrEmpty(pass))
+                return BadRequest(new { Message = pass });
 
             // HASHING THE PASSWORD
             userObj.Password = PasswordHasher.HashPassword(userObj.Password);
@@ -66,6 +72,17 @@ namespace AngularAuthApi.Controllers
         private Task<bool> CheckEmailExistAsync(string email)
         {
             return _authContext.Users.AnyAsync(y => y.Email == email);
+        }
+
+        private string CheckPasswordStrength(string password)
+        {
+            StringBuilder sb = new StringBuilder();
+            
+            Regex validateGuidRegex = new Regex("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+
+            if(!validateGuidRegex.IsMatch(password))
+                sb.Append("The Passwor should contain at least one lower case, one upper case and one number." + Environment.NewLine);
+            return sb.ToString();
         }
     }
 }
