@@ -37,14 +37,35 @@ namespace AngularAuthApi.Controllers
         {
             if(userObj==null)
                 return BadRequest();
+            
+            // CHECK USERNAME
+            if(await CheckUsernameExistAsync(userObj.Username))
+                return BadRequest(new {Message = "Username Already Exist!"});
 
+            // CHECK EMAIL UNIQUE
+            if (await CheckEmailExistAsync(userObj.Email))
+                return BadRequest(new { Message = "Email Alreaddy Exist!" });
+            // CHECK PASSWORD STRENGTH
+
+            // HASHING THE PASSWORD
             userObj.Password = PasswordHasher.HashPassword(userObj.Password);
             userObj.Role = "User";
             userObj.Token = "";
+
+            // SAVING THE USER TO DB
             await _authContext.Users.AddAsync(userObj);
             await _authContext.SaveChangesAsync();
 
             return Ok(new { Message = "User registered" });
+        }
+
+        private Task<bool> CheckUsernameExistAsync(string username)
+        {
+            return _authContext.Users.AnyAsync(x => x.Username == username);
+        }
+        private Task<bool> CheckEmailExistAsync(string email)
+        {
+            return _authContext.Users.AnyAsync(y => y.Email == email);
         }
     }
 }
