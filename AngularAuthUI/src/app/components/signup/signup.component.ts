@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateForm';
 import { AuthService } from 'src/app/services/auth.service';
+import { NgToastService } from 'ng-angular-popup';
 
 @Component({
   selector: 'app-signup',
@@ -24,7 +25,8 @@ export class SignupComponent {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toast: NgToastService
   ) {}
 
   ngOnInit(): void {
@@ -49,11 +51,21 @@ export class SignupComponent {
       this.authService.signUp(this.signUpForm.value).subscribe({
         next: (res) => {
           console.log('Register:', res.message);
+          this.toast.success({
+            detail: 'SUCCESS',
+            summary: res.message,
+            duration: 3000,
+          });
           this.signUpForm.reset();
           this.router.navigate(['login']);
         },
         error: (err) => {
           console.log('Error Registration:', err?.error.message);
+          this.toast.error({
+            detail: 'ERROR',
+            summary: err?.error.message,
+            duration: 3000,
+          });
         },
       });
       //console.log(this.signUpForm.value);
