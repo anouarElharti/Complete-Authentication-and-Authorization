@@ -48,6 +48,9 @@ export class LoginComponent {
       this.authService.login(this.loginForm.value).subscribe({
         next: (res) => {
           console.log('Response:', res.message);
+          // STORE THE TOKEN
+          this.authService.storeToken(res.token);
+          // TOAST ALERT MESSAGE
           this.toast.success({
             detail: 'SUCCESS',
             summary: res.message,
