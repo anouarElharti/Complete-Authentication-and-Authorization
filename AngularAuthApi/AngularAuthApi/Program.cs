@@ -1,5 +1,8 @@
 using AngularAuthApi.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +16,24 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnectionString"));
 });
-
+// JWT TOKEN CONFIG START***********
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = true;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("veryveryverysecrettoken......")),
+        ValidateAudience = false,
+        ValidateIssuer = false,
+    };
+});
+// JWT TOKEN CONFIG END*************
 builder.Services.AddCors(option =>
 {
     option.AddPolicy("mine", builder =>
@@ -35,7 +55,7 @@ app.UseCors("mine");
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
+app.UseAuthentication(); // RELATED TO THE JWT
 
 app.UseAuthorization();
 

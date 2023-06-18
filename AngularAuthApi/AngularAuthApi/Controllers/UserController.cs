@@ -4,6 +4,9 @@ using AngularAuthApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -35,7 +38,12 @@ namespace AngularAuthApi.Controllers
             if(!PasswordHasher.VerifyPassword(userObj.Password,user.Password))
                 return BadRequest(new {Message="Password is incorrect!"});
 
-            return Ok(new { Message = "Login Success!" });
+            user.Token = CreateJwtToken(user);
+            return Ok(new 
+            {
+                Token = user.Token,
+                Message = "Login Success!" 
+            });
         }
 
         [HttpPost("register")]
@@ -69,6 +77,11 @@ namespace AngularAuthApi.Controllers
             return Ok(new { Message = "User registered" });
         }
 
+        [HttpGet]
+        public async Task<ActionResult<User>> GetAllUsers()
+        {
+            return Ok(await _authContext.Users.ToListAsync());
+        }
         private Task<bool> CheckUsernameExistAsync(string username)
         {
             return _authContext.Users.AnyAsync(x => x.Username == username);
@@ -87,6 +100,30 @@ namespace AngularAuthApi.Controllers
             if(!validateGuidRegex.IsMatch(password))
                 sb.Append("The Passwor should contain at least one lower case, one upper case and one number." + Environment.NewLine);
             return sb.ToString();
+        }
+
+        private string CreateJwtToken(User user)
+        {
+            var JwtTokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("veryveryverysecrettoken......");
+            var identity = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.Name,$"{user.FirstName} {user.LastName}")
+            });
+
+            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = identity,
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = credentials
+            };
+
+            var token = JwtTokenHandler.CreateToken(tokenDescriptor);
+
+            return JwtTokenHandler.WriteToken(token);
         }
     }
 }
