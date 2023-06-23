@@ -1,8 +1,34 @@
 <nav class="navbar bg-body-tertiary">
-    <div class="container-fluid">
-      <a class="navbar-brand">Dashboard</a>
-      <div>
-        <h4>Hello!</h4>
-      </div>
+  <div class="container-fluid">
+    <a class="navbar-brand">Dashboard</a>
+    <div>
+      <h4>Hello! {{fullName}}</h4>
     </div>
-  </nav>
+    <button class="btn btn-sm btn-danger" (click)="logOut()">Logout</button>
+  </div>
+</nav>
+<h1>Dashboard</h1>
+<div class="container-fluid">
+  <div class="row">
+    <div class="container">
+      <table class="table table-striped" *ngIf="role == 'Admin'">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of users">
+            <th scope="row">{{employee.id}}</th>
+            <td>{{employee.firstName}}</td>
+            <td>{{employee.lastName}}</td>
+            <td>{{employee.email}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

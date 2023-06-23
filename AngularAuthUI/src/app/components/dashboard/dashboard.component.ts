@@ -11,8 +11,8 @@ import { UserStoreService } from 'src/app/services/user-store.service';
 export class DashboardComponent {
   users: any = [];
 
-  private fullName: string = '';
-  private role: string = '';
+  public fullName: string = '';
+  public role: string = '';
 
   constructor(
     private auth: AuthService,
@@ -27,6 +27,10 @@ export class DashboardComponent {
     this.userStore.getFullNameFromStore().subscribe((val) => {
       let fullNameFromToken = this.auth.getFullNameFromToken();
       this.fullName = val || fullNameFromToken;
+    });
+    this.userStore.getRoleFromStore().subscribe((val) => {
+      let roleFromToken = this.auth.getRoleFromToken();
+      this.role = val || roleFromToken;
     });
   }
 

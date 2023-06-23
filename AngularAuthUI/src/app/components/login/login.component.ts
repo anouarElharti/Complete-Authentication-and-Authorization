@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateForm';
 import { AuthService } from 'src/app/services/auth.service';
 import { NgToastService } from 'ng-angular-popup';
+import { UserStoreService } from 'src/app/services/user-store.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private toast: NgToastService
+    private toast: NgToastService,
+    private userStore: UserStoreService
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +52,10 @@ export class LoginComponent {
           console.log('Response:', res.message);
           // STORE THE TOKEN
           this.authService.storeToken(res.token);
+          // SETTING THE USER NAME FROM TOKEN & ROLE
+          let tokenPayload = this.authService.decodedToken();
+          this.userStore.setFullNameforStore(tokenPayload.unique_name);
+          this.userStore.setRoleForStore(tokenPayload.role);
           // TOAST ALERT MESSAGE
           this.toast.success({
             detail: 'SUCCESS',

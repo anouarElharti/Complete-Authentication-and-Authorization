@@ -23,5 +23,6 @@ export class UserStoreService {
   }
   public setFullNameforStore(fullname: string) {
     this.fullName$.next(fullname);
+    console.log('full name:', this.fullName$);
   }
 }
