@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserStoreService } from 'src/app/services/user-store.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,11 +11,22 @@ import { AuthService } from 'src/app/services/auth.service';
 export class DashboardComponent {
   users: any = [];
 
-  constructor(private auth: AuthService, private api: ApiService) {}
+  private fullName: string = '';
+  private role: string = '';
+
+  constructor(
+    private auth: AuthService,
+    private api: ApiService,
+    private userStore: UserStoreService
+  ) {}
 
   ngOnInit() {
     this.api.getAllUsers().subscribe((res) => {
       this.users = res;
+    });
+    this.userStore.getFullNameFromStore().subscribe((val) => {
+      let fullNameFromToken = this.auth.getFullNameFromToken();
+      this.fullName = val || fullNameFromToken;
     });
   }
 
