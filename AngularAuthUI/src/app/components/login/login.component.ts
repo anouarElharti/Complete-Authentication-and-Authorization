@@ -49,9 +49,11 @@ export class LoginComponent {
       // send the object to the api
       this.authService.login(this.loginForm.value).subscribe({
         next: (res) => {
-          console.log('Response:', res.message);
+          console.log('You have logged In! Success.');
           // STORE THE TOKEN
-          this.authService.storeToken(res.token);
+          this.authService.storeToken(res.accessToken);
+          // CHECK REFRESH TOKEN
+          this.authService.storeRefreshToken(res.refreshToken);
           // SETTING THE USER NAME FROM TOKEN & ROLE
           let tokenPayload = this.authService.decodedToken();
           this.userStore.setFullNameforStore(tokenPayload.unique_name);

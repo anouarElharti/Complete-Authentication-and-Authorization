@@ -56,9 +56,9 @@ app.UseCors("mine");
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // RELATED TO THE JWT
-
 app.UseAuthorization();
+
+app.UseAuthentication(); // RELATED TO THE JWT
 
 app.MapControllers();
 
