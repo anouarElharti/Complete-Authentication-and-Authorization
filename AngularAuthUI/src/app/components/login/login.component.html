@@ -21,7 +21,7 @@
                                 </div>
                                 <small *ngIf="loginForm.controls['password'].dirty && loginForm.hasError('required','password')" class="text-danger">*Password is required!</small>
                                 <div class="form-inline fr mt-4">
-                                    <a id="forgetPwd" class="font-weight-bold">Forget Password?</a>
+                                    <a id="forgetPwd" class="font-weight-bold" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Forget Password?</a>
                                 </div>
                                 <button (click)="onSubmit()" type="submit" class="btn btn-primary btn-block mt-4 w-100">Login</button>
                                 <div class="text-center pt-4 text-muted">Don't have account? <a id="forgetPwd" routerLink="/signup">Register</a></div>
@@ -40,3 +40,32 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Forget Password</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Recipient:</label>
+              <input [(ngModel)]="resetPwd" name="resetPwd" (ngModelChange)="checkValidEmail($event)" type="email" placeholder="Email" class="form-control" id="recipient-name">
+              <small class="text-danger" *ngIf="!resetPwd">
+                Please Enter you Email address!
+              </small><br/>
+              <small class="text-danger" *ngIf="!isValidEmail && resetPwd !=''">
+                The Email Address is not Valid!
+              </small>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="closeBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" (click)="confirmToSend()" class="btn btn-primary">Send New Password</button>
+        </div>
+      </div>
+    </div>
+  </div>

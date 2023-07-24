@@ -15,5 +15,7 @@ namespace AngularAuthApi.Models
         public string Role { get; set; }
         public string? RefresToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
+        public string? ResetPasswordToken { get; set; }
+        public DateTime? ResetPasswordTokenExpiry { get; set; }
     }
 }

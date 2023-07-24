@@ -22,6 +22,8 @@ export class LoginComponent {
   eyeClass: string = 'fa fa-eye-slash';
 
   loginForm!: FormGroup;
+  public resetPwd!: string;
+  public isValidEmail!: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -81,6 +83,22 @@ export class LoginComponent {
       // throw error using toaster
       ValidateForm.validateAllFormFields(this.loginForm);
       console.log('Form not valid');
+    }
+  }
+
+  checkValidEmail(event: string) {
+    const value = event;
+    const pattern = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
+    this.isValidEmail = pattern.test(value);
+    return this.isValidEmail;
+  }
+
+  confirmToSend() {
+    if (this.checkValidEmail(this.resetPwd)) {
+      this.resetPwd = '';
+      const buttonRef = document.getElementById('closeBtn');
+      buttonRef?.click();
+      // API CALL TO BE DONE
     }
   }
 }
